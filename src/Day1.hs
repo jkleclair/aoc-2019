@@ -26,7 +26,9 @@ execute = do
     let masses = map readMaybe massesFileSplit  -- [Just x, Just y, ..., Just z]
     let fuels = map findFuel masses   -- Part 1 Calculation
     let fuels' = map findFuel' masses  -- Part 2 Calculation
-    print ("Part 1:")
+    putStrLn ("Day 1")
+    putStrLn ("Part 1:")
     print (sum fuels)
-    print ("Part 2:")
+    putStrLn ("Part 2:")
     print (sum fuels')
+    putStrLn ("")

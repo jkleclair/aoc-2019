@@ -1,6 +1,9 @@
 module Main where
 
 import qualified Day1
+import qualified Day2
 
 main :: IO ()
-main = Day1.execute
+main = do
+    Day1.execute
+    Day2.execute
