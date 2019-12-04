@@ -42,16 +42,19 @@ calcX (x1, y1) (x2, y2) (x3, y3) (x4, y4)
 --   where
 --     intersection = calcX point1 point2 point3 point4
 
-getIntersections :: [(Float, Float)] -> [(Float, Float)] -> [(Float, Float)] -> [(Float, Float)]
-getIntersections _ _ (point:[]) = []
-getIntersections origFirst (point:[]) (p:ps) = getIntersections origFirst origFirst ps
-getIntersections origFirst (point1:point2:firstPoints) (point3:point4:secondPoints)
-  -- | trace (show point1 ++ show point2 ++ show point3 ++ show point4) False = []
-  | Nothing    <- intersection = [] ++ getIntersections origFirst (point2:firstPoints) (point3:point4:secondPoints)
-  | Just (x,y) <- intersection = [(x,y)] ++ getIntersections origFirst (point2:firstPoints) (point3:point4:secondPoints)
-  where
-    intersection = calcX point1 point2 point3 point4
-getIntersections _ _ _ = []
+getSegmentIntersections :: [(Float, Float)] -> [(Float, Float)] -> [(Float, Float)]
+getSegmentIntersections _ (point:[]) = []
+getSegmentIntersections [point1, point2] (point3:point4:rest)
+    | Nothing <- intersection = getSegmentIntersections [point1, point2] (point4:rest)
+    | Just (x,y) <- intersection = [(x,y)] ++ getSegmentIntersections [point1, point2] (point4:rest)
+    where
+        intersection = calcX point1 point2 point3 point4
+
+getAllIntersections :: [(Float, Float)] -> [(Float, Float)] -> [(Float, Float)]
+getAllIntersections (point:[]) _ = []
+getAllIntersections (point1:point2:firstPoints) secondPoints =
+    getSegmentIntersections [point1, point2] secondPoints ++ getAllIntersections (point2:firstPoints) secondPoints
+
 
 manhattanDistance :: (Float, Float) -> Float
 manhattanDistance (x,y) = x + y
@@ -62,7 +65,7 @@ execute = do
   let directionsPair = lines directionsStr
   let lineA = parseDirections (splitOn "," (head directionsPair)) [(0,0)]
   let lineB = parseDirections (splitOn "," (last directionsPair)) [(0,0)]
-  let xs = getIntersections lineA lineA lineB
+  let xs = getAllIntersections lineA lineB
   let distances = map manhattanDistance xs
   putStrLn ("Day 3")
   putStrLn ("Part 1: ")
